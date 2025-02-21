@@ -1,16 +1,29 @@
 import { v4 as uuidv4 } from "uuid";
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import FeedbackData from "../data/FeedbackData";
+import { data } from "react-router-dom";
 
 const FeedbackContext = createContext();
 
 export const FeedbackProvider = ({ children }) => {
-  const [feedback, setFeedback] = useState(FeedbackData);
+  const [isLoading, setIsLoading] = useState(true);
+  const [feedback, setFeedback] = useState([]);
 
   const [feedbackEdit, setFeedbackEdit] = useState({
     item: {},
     edit: false,
   });
+
+  useEffect(() => {
+    fetchFeedback();
+  }, []);
+
+  const fetchFeedback = async () => {
+    const response = await fetch("http://localhost:5000/feedbacks");
+    const data = await response.json();
+    setFeedback(data);
+    setIsLoading(false);
+  };
 
   const editFeedback = (item) => {
     setFeedbackEdit({
